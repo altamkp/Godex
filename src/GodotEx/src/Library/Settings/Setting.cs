@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// An abstraction for any setting fields of type <typeparamref name="T"/> in the game.

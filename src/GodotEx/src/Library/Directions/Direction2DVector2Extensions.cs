@@ -1,7 +1,7 @@
-using DotEx.Maths;
+using Qkabi.DotnetEx.Maths;
 using Godot;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Extensions for <see cref="Direction2D"/> related to <see cref="Vector3"/>.

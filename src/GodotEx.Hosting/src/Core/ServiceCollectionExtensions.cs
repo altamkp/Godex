@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace GodotEx.Hosting;
+namespace Qkabi.GodotEx.Hosting;
 
 /// <summary>
 /// Extension methods for <see cref="IServiceCollection"/>.

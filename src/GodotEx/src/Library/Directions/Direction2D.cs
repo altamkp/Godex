@@ -1,4 +1,4 @@
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Arbitrary direction enum representing 2-DOF directions.

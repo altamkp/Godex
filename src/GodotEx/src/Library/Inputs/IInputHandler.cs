@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 internal interface IInputHandler {
     string Id { get; }

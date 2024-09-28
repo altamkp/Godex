@@ -1,9 +1,9 @@
-using DotEx.Reflections;
+using Qkabi.DotnetEx.Reflections;
 using Godot;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
-namespace GodotEx.Hosting;
+namespace Qkabi.GodotEx.Hosting;
 
 internal class DependencyInjector : IHostedService, IDisposable {
     private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;

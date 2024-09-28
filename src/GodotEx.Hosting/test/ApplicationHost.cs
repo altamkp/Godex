@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text.RegularExpressions;
 
-namespace GodotEx.Hosting.Tests;
+namespace Qkabi.GodotEx.Hosting.Tests;
 
 public partial class ApplicationHost : Host {
     public override void _EnterTree() {

@@ -1,4 +1,4 @@
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Attribute that is recognized by <see cref="NodeExtensions.ResolveGroup(Godot.Node)"/> to set

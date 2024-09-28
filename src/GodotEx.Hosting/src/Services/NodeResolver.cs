@@ -1,7 +1,7 @@
 using Godot;
 using Microsoft.Extensions.Hosting;
 
-namespace GodotEx.Hosting;
+namespace Qkabi.GodotEx.Hosting;
 
 internal class NodeResolver : IHostedService, IDisposable {
     private readonly SceneTree _tree;

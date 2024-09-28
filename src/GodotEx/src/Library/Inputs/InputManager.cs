@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Manager class for registering <see cref="InputEvent"/>s and handling them.

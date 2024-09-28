@@ -3,7 +3,7 @@ using System;
 using System.Text.RegularExpressions;
 using Xunit;
 
-namespace GodotEx.Hosting.Tests;
+namespace Qkabi.GodotEx.Hosting.Tests;
 
 public partial class DependencyInjectorTest : Node {
     [Inject] private Random _random;

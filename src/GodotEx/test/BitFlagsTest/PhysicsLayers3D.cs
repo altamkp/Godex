@@ -1,4 +1,4 @@
-namespace GodotEx.Tests;
+namespace Qkabi.GodotEx.Tests;
 
 public enum PhysicsLayers3D : uint {
     None = 0,

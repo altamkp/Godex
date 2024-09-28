@@ -1,4 +1,4 @@
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Raycast dictionary keys as defined by Godot, see 

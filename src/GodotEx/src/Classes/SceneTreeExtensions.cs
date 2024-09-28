@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Extensions for <see cref="SceneTree"/>.

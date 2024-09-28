@@ -1,7 +1,7 @@
 using Godot;
 using System.Runtime.CompilerServices;
 
-namespace GodotEx.Async;
+namespace Qkabi.GodotEx.Async;
 
 /// <summary>
 /// A cancellable signal awaiter that wraps the Godot <see cref="SignalAwaiter"/>. Using ToSignal 

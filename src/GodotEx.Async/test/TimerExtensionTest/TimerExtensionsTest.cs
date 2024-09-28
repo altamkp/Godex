@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Timer = Godot.Timer;
 
-namespace GodotEx.Async.Tests;
+namespace Qkabi.GodotEx.Async.Tests;
 
 public partial class TimerExtensionsTest : Node {
     public override void _Ready() {

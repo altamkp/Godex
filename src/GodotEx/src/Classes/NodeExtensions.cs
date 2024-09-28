@@ -1,7 +1,7 @@
 using Godot;
 using System.Reflection;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Extensions for <see cref="Node"/>.

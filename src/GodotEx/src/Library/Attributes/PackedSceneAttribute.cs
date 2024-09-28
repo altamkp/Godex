@@ -1,7 +1,7 @@
 using Godot;
 using System.Runtime.CompilerServices;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Attribute that is recognized by <see cref="GDx.New{T}(Action{T}?)"/> to instantiate custom 

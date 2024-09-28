@@ -1,7 +1,7 @@
 using Godot;
 using System.Reflection;
 
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 public static partial class NodeExtensions {
     private static readonly Dictionary<Type, GroupAttribute?> GROUP_INFOS = new();

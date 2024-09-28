@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx.Tests;
+namespace Qkabi.GodotEx.Tests;
 
 public partial class ScenePathTest : Node {
     public override void _Ready() {

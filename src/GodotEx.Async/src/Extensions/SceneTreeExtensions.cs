@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx.Async;
+namespace Qkabi.GodotEx.Async;
 
 /// <summary>
 /// Extensions for <see cref="SceneTree"/>.

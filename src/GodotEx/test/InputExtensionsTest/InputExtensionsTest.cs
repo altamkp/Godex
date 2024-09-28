@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotEx.Tests;
+namespace Qkabi.GodotEx.Tests;
 
 public partial class InputExtensionsTest : Node {
     public override void _ShortcutInput(InputEvent @event) {

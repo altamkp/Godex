@@ -2,7 +2,7 @@ using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace GodotEx.Hosting;
+namespace Qkabi.GodotEx.Hosting;
 
 /// <summary>
 /// A node that provides hosting service. Override <see cref="ConfigureServices(IServiceCollection)"/>

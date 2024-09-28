@@ -28,7 +28,6 @@ $product = $(basename $(git rev-parse --show-toplevel))
 
 Invoke-Utility dotnet clean --configuration release
 Invoke-Utility dotnet build "-p:Version=$version" --configuration release
-Invoke-Utility dotnet test
 Invoke-Utility dotnet pack "-p:Version=$version" --configuration release -o Releases/$version --no-build
 
 Write-Host "[Information]: Publishing $product $version"

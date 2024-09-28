@@ -1,4 +1,4 @@
-namespace GodotEx;
+namespace Qkabi.GodotEx;
 
 /// <summary>
 /// Additional Raycast related definitions
