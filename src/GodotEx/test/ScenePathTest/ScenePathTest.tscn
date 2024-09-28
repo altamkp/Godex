@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnhpnj7vafo6k"]
+
+[ext_resource type="Script" path="res://ScenePathTest/ScenePathTest.cs" id="1_1yk84"]
+
+[node name="ScenePathTest" type="Node"]
+script = ExtResource("1_1yk84")

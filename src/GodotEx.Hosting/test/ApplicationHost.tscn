@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://du1rxqc4esq3y"]
+
+[ext_resource type="Script" path="res://ApplicationHost.cs" id="1_vrt8k"]
+
+[node name="ApplicationHost" type="Node"]
+script = ExtResource("1_vrt8k")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

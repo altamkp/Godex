@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://dklt1c2d6ilfu"]
+
+[ext_resource type="Script" path="res://ScenePathTest/TestLabel.cs" id="1_w0b76"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3mync"]
+font_size = 96
+
+[node name="TestLabel" type="Label"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Hello world"
+label_settings = SubResource("LabelSettings_3mync")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("1_w0b76")

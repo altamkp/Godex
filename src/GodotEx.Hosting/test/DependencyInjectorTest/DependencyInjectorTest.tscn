@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b6bqqggc1g6bs"]
+
+[ext_resource type="Script" path="res://DependencyInjectorTest/DependencyInjectorTest.cs" id="1_mt4uw"]
+
+[node name="DependencyInjectorTest" type="Node"]
+script = ExtResource("1_mt4uw")

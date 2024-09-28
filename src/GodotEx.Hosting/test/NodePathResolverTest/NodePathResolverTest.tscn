@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://bc8oqlkmolfkd"]
+
+[ext_resource type="Script" path="res://NodePathResolverTest/NodePathResolverTest.cs" id="1_7pgk0"]
+
+[node name="NodePathResolverTest" type="Node"]
+script = ExtResource("1_7pgk0")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Label"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Label/AudioStreamPlayer2D"]
+unique_name_in_owner = true

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bu42sjjadacdh"]
+
+[ext_resource type="Script" path="res://TimerExtensionTest/TimerExtensionsTest.cs" id="1_mq17s"]
+
+[node name="TimerExtensionsTest" type="Node"]
+script = ExtResource("1_mq17s")

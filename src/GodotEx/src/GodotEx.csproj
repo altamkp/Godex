@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>GodotEx</PackageId>
+        <Authors>altamkp</Authors>
+        <Company>altamkp</Company>
+        <PackageDescription>Extension library for Godot in C#.</PackageDescription>
+        <RepositoryUrl>https://github.com/altamkp/GodotEx</RepositoryUrl>
+        <PackageProjectUrl>https://altamkp.github.io/GodotEx/docs/GodotEx</PackageProjectUrl>
+
+        <LangVersion>10.0</LangVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <IsPackable>true</IsPackable>
+        <OutputType>Library</OutputType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <NoWarn>8618</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DotEx" Version="1.0.3" />
+        <PackageReference Include="GodotSharp" Version="4.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+</Project>

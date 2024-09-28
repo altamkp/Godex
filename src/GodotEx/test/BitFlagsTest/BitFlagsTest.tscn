@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://hxntvkv6m8xa"]
+
+[ext_resource type="Script" path="res://BitFlagsTest/BitFlagsTest.cs" id="1_opfb2"]
+
+[node name="Character" type="CharacterBody3D"]
+script = ExtResource("1_opfb2")
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="."]
