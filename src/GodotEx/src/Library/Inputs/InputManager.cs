@@ -3,106 +3,191 @@ using Godot;
 namespace Qkabi.GodotEx;
 
 /// <summary>
-/// Manager class for registering <see cref="InputEvent"/>s and handling them.
+/// Input manager for handling <see cref="InputEvent"/>s.
 /// </summary>
 public class InputManager {
-    private readonly Dictionary<string, IInputHandler> _handlers = new();
+    private static readonly Func<InputEvent, bool> TRUE = e => true;
+
+    private readonly List<IInputHandler> _inputHandlers = new();
     private readonly Viewport _viewport;
 
     /// <summary>
-    /// Instantiates new <see cref="InputManager"/> for registering <see cref="InputEvent"/>s
-    /// and handling them.
+    /// Create new instance of <see cref="InputManager"/>.
     /// </summary>
-    /// <param name="viewport"></param>
+    /// <param name="viewport">Viewport to use.</param>
     public InputManager(Viewport viewport) {
         _viewport = viewport;
     }
 
     /// <summary>
-    /// If true, calling <see cref="Handle(InputEvent)"/> has no effect.
+    /// Add input handler for InputEventMouseMotion, since InputEventMouseMotion does not support
+    /// <see cref="InputEvent.IsMatch(InputEvent, bool)"/>, it should be handled .
     /// </summary>
-    public bool Disabled { get; set; } = false;
+    /// <param name="handler"></param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    public void AddMouseMotionHandler(Action<InputEventMouseMotion> handler, bool pass = false) {
+        AddMouseMotionHandler(TRUE, handler, pass);
+    }
 
     /// <summary>
-    /// Adds input handler for <see cref="InputEvent"/>s which matches all input events that satisfy <paramref name="predicate"/>.
+    /// Add input handler for InputEventMouseMotion, since InputEventMouseMotion does not support action,
+    /// it should be handled specifically.
     /// </summary>
-    /// <typeparam name="TInputEvent">Type of <see cref="InputEvent"/> to handle.</typeparam>
-    /// <param name="id">Id of the handler.</param>
-    /// <param name="predicate">Predicate which matches event to handle.</param>
-    /// <param name="handler">Handler to call if input event matches successfully.</param>
-    /// <param name="pass">Whether the input would be passed to its parent after it has been handled.</param>
-    public void AddHandler<TInputEvent>(string id,
-                                        Predicate<TInputEvent> predicate,
+    /// <param name="predicate"> Predicate if the handler should be used.</param>
+    /// <param name="handler"></param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    public void AddMouseMotionHandler(Func<InputEventMouseMotion, bool> predicate,
+                                      Action<InputEventMouseMotion> handler,
+                                      bool pass = false) {
+        _inputHandlers.Add(new InputHandler<InputEventMouseMotion>(predicate, handler, pass));
+    }
+
+    /// <summary>
+    /// Add input handler for InputEventKey, This would match pressed key and require all modifiers
+    /// like shift, ctrl, alt to *not* pressed.
+    /// </summary>
+    /// <param name="key">key pressed</param>
+    /// <param name="handler">the handler to call if inputEvent matches</param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    /// <exception cref="ArgumentException">if inputEvent is InputEventMouseMotion or name has already been registered</exception>
+    public void AddKeyHandler(Key key, Action<InputEventKey> handler, bool pass = false) {
+        AddHandler<InputEventKey>(e => e.Keycode == key
+            && e.Pressed == true
+            && e.AltPressed == false
+            && e.CtrlPressed == false
+            && e.ShiftPressed == false, handler, pass);
+    }
+
+    /// <summary>
+    /// Add input handler for InputEventKey, This would match pressed key and match modifiers
+    /// like shift, ctrl, alt to modifierMask.
+    /// </summary>
+    /// <param name="key">key pressed</param>
+    /// <param name="modifierMask">the modifiers to match</param>
+    /// <param name="handler">the handler to call if inputEvent matches</param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    /// <exception cref="ArgumentException">if inputEvent is InputEventMouseMotion or name has already been registered</exception>
+    public void AddKeyHandler(Key key,
+                              KeyModifierMask modifierMask,
+                              Action<InputEventKey> handler,
+                              bool pass = false) {
+        var altPressed = modifierMask.HasFlag(KeyModifierMask.MaskAlt);
+        var ctrlPressed = modifierMask.HasFlag(KeyModifierMask.MaskCtrl)
+            || modifierMask.HasFlag(KeyModifierMask.MaskCmdOrCtrl);
+        var shiftPressed = modifierMask.HasFlag(KeyModifierMask.MaskShift);
+        AddHandler<InputEventKey>(e => e.Keycode == key
+            && e.Pressed == true
+            && e.AltPressed == altPressed
+            && e.CtrlPressed == ctrlPressed
+            && e.ShiftPressed == shiftPressed, handler, pass);
+    }
+
+    /// <summary>
+    /// Add input handler for InputEvent, such InputEventKey, InputEventMouseButton, InputEventJoypadButton,
+    /// InputEventJoyPadMotion and InputEventAction. This would match both pressed and released event and
+    /// ignore all modifiers.
+    /// </summary>
+    /// <typeparam name="TInputEvent">the type of InputEvent to handler</typeparam>
+    /// <param name="inputEvent">the inputEvent to match. </param>
+    /// <param name="handler">the handler to call if inputEvent matches</param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    /// <exception cref="ArgumentException">if inputEvent is InputEventMouseMotion or name has already been registered</exception>
+    public void AddHandler<TInputEvent>(TInputEvent inputEvent,
                                         Action<TInputEvent> handler,
                                         bool pass = false)
-                                            where TInputEvent : InputEvent {
-        if (_handlers.ContainsKey(id)) {
-            throw new ArgumentException($"{id} has already been registered.");
-        }
-        _handlers.Add(id, new InputHandler<TInputEvent>(id, predicate, handler, pass));
+            where TInputEvent : InputEvent {
+        AddHandler(e => e.IsMatch(inputEvent, false), handler, pass);
     }
 
     /// <summary>
-    /// Adds custom input handler.
+    /// Add input handler for InputEvent, such InputEventKey, InputEventMouseButton, InputEventJoypadButton,
+    /// InputEventJoyPadMotion and InputEventAction. This would match only pressed or released event depends
+    /// on <paramref name="matchPressed"/> and match modifiers depends on <paramref name="matchModifiers"/>.
     /// </summary>
-    /// <param name="handler">Handler to add.</param>
-    /// <exception cref="ArgumentException"></exception>
-    public void AddHandler<T>(InputHandler<T> handler) where T : InputEvent {
-        if (!_handlers.TryAdd(handler.Id, handler)) {
-            throw new ArgumentException($"{handler.Id} has already been registered.");
-        }
+    /// <typeparam name="TInputEvent">the type of InputEvent to handler</typeparam>
+    /// <param name="inputEvent">the inputEvent to match. </param>
+    /// <param name="matchPressed">match pressed specified in <paramref name="inputEvent"/> if true, otherwise ignore pressed</param>
+    /// <param name="matchModifiers">match modifier specified in <paramref name="inputEvent"/> if true, otherwise ignore all modifiers</param>
+    /// <param name="handler">the handler to call if inputEvent matches</param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    /// <exception cref="ArgumentException">if inputEvent is InputEventMouseMotion or name has already been registered</exception>
+    public void AddHandler<TInputEvent>(TInputEvent inputEvent,
+                                        bool matchPressed,
+                                        bool matchModifiers,
+                                        Action<TInputEvent> handler,
+                                        bool pass = false)
+            where TInputEvent : InputEvent {
+        Func<TInputEvent, bool> predicate = matchPressed
+            ? e => e.IsPressed() == inputEvent.IsPressed() && e.IsMatch(inputEvent, matchModifiers)
+            : e => e.IsMatch(inputEvent, matchModifiers);
+        AddHandler(predicate, handler, pass);
     }
 
     /// <summary>
-    /// Removes input handler with the given <paramref name="id"/>.
+    /// Add input handler for InputEvent, such InputEventKey, InputEventMouseButton, InputEventJoypadButton,
+    /// InputEventJoyPadMotion and InputEventAction. This would match all input events that match
+    /// <paramref name="predicate"/>.
     /// </summary>
-    /// <param name="id">Name of the handler to remove.</param>
-    /// <exception cref="ArgumentException">Handler was not registered.</exception>
-    public void RemoveHandler(string id) {
-        if (!_handlers.Remove(id)) {
-            throw new ArgumentException($"{id} was not registered.");
+    /// <typeparam name="TInputEvent">the type of InputEvent to handler</typeparam>
+    /// <param name="predicate">the predicate which matches event to handle</param>
+    /// <param name="handler">the handler to call if inputEvent matches</param>
+    /// <param name="pass">should pass the event to upper leven even handled</param>
+    /// <exception cref="ArgumentException">if inputEvent is InputEventMouseMotion or name has already been registered</exception>
+    public void AddHandler<TInputEvent>(Func<TInputEvent, bool> predicate,
+                                        Action<TInputEvent> handler,
+                                        bool pass = false)
+            where TInputEvent : InputEvent {
+        if (typeof(TInputEvent) == typeof(InputEventMouseMotion)) {
+            throw new ArgumentException($"Use AddMouseMotionInputHandler instead.");
         }
+        _inputHandlers.Add(new InputHandler<TInputEvent>(predicate, handler, pass));
     }
 
     /// <summary>
-    /// Enables input handler by its given <paramref name="id"/>.
+    /// Handle <see cref="InputEvent"/>.
     /// </summary>
-    /// <param name="id">Name of the handler to enable.</param>
-    /// <exception cref="ArgumentException">Handler was not registered.</exception>
-    public void EnableHandler(string id) {
-        if (!_handlers.TryGetValue(id, out var handler)) {
-            throw new ArgumentException($"{id} was not registered.");
-        }
-        handler.Disabled = false;
-    }
-
-    /// <summary>
-    /// Disables input handler by its given <paramref name="id"/>.
-    /// </summary>
-    /// <param name="id">Name of the handler to disable.</param>
-    /// <exception cref="ArgumentException">Handler was not registered.</exception>
-    public void DisableHandler(string id) {
-        if (!_handlers.TryGetValue(id, out var handler)) {
-            throw new ArgumentException($"{id} was not registered.");
-        }
-        handler.Disabled = true;
-    }
-
-    /// <summary>
-    /// Handles the provided <paramref name="event"/>. This is normally used within override Godot input methods such as
-    /// <see cref="Node._Input(InputEvent)"/>, <see cref="Node._UnhandledInput(InputEvent)"/>, <see cref="Control._GuiInput(InputEvent)"/> etc.
-    /// </summary>
-    /// <param name="event">Input event to handle.</param>
-    public void Handle(InputEvent @event) {
-        if (Disabled) {
-            return;
-        }
-
-        foreach (var (_, handler) in _handlers) {
-            if (handler.Handle(@event) && !handler.Pass) {
+    /// <param name="inputEvent">Input event to handle.</param>
+    /// <returns>If handled, return true.</returns>
+    public bool Handle(InputEvent inputEvent) {
+        foreach (IInputHandler inputHandler in _inputHandlers) {
+            if (inputHandler.Handle(inputEvent) && !inputHandler.Pass) {
                 _viewport.SetInputAsHandled();
-                return;
+                return true;
             }
+        }
+        return false;
+    }
+
+    private interface IInputHandler {
+        public bool Pass { get; }
+
+        bool Handle(InputEvent inputEvent);
+    }
+
+    private class InputHandler<TInputEvent> : IInputHandler where TInputEvent : InputEvent {
+        private readonly Func<TInputEvent, bool> _predicate;
+        private readonly Action<TInputEvent> _handler;
+
+        public InputHandler(Func<TInputEvent, bool> predicate, Action<TInputEvent> handler, bool pass) {
+            Pass = pass;
+            _predicate = predicate;
+            _handler = handler;
+        }
+
+        public string Name { get; }
+        public bool Pass { get; }
+
+        public bool Handle(InputEvent inputEvent) {
+            if (inputEvent is not TInputEvent tInputEvent) {
+                return false;
+            }
+
+            if (!_predicate(tInputEvent)) {
+                return false;
+            }
+
+            _handler(tInputEvent);
+            return true;
         }
     }
 }

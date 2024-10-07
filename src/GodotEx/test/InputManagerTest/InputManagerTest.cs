@@ -10,20 +10,15 @@ public partial class InputManagerTest : Control {
         _shortcutManager = new(GetViewport());
         _inputManager = new(GetViewport());
 
-        _shortcutManager.AddHandler<InputEventKey>("Space",
+        _shortcutManager.AddHandler<InputEventKey>(
             e => e.IsKeyPressed(Key.Space),
             e => GD.Print($"{e.Keycode} pressed"));
 
-        var copyHandler = new InputHandler<InputEventKey>("Copy",
-            e => e.IsKeyPressed(Key.C, KeyModifierMask.MaskCtrl),
-            e => GD.Print($"{e.AsText()} pressed."));
-        _shortcutManager.AddHandler(copyHandler);
-
-        _inputManager.AddHandler<InputEventMouseButton>("Left click",
+        _inputManager.AddHandler<InputEventMouseButton>(
             e => e.IsMousePressed(MouseButton.Left),
             e => GD.Print($"{e.ButtonIndex} clicked"));
 
-        _inputManager.AddHandler<InputEventMouseMotion>("Mouse motion",
+        _inputManager.AddHandler<InputEventMouseMotion>(
             _ => true,
             e => GD.Print(e.Position));
     }
