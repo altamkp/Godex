@@ -16,11 +16,11 @@
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NoWarn>8618</NoWarn>
+    <NoWarn>8618,IDE0130</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotnetEx" Version="0.0.1" />
+    <PackageReference Include="DotnetEx" Version="0.0.2" />
     <PackageReference Include="GodotSharp" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />

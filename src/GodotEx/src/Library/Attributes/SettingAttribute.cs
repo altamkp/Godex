@@ -1,4 +1,4 @@
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Recognized by <see cref="SettingsServer"/> to inject <see cref="Setting{T}"/>

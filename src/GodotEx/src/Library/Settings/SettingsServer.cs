@@ -1,8 +1,8 @@
-using Qkabi.DotnetEx.Reflections;
+using DotnetEx;
 using Godot;
 using System.Reflection;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Server that manages <see cref="Setting{T}"/> instances, which are abstractions over a

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Builder used for constructing <see cref="SettingsServer"/> with user configured settings.

@@ -1,7 +1,7 @@
 using Godot;
 using Timer = Godot.Timer;
 
-namespace Qkabi.GodotEx.Async;
+namespace GodotEx.Async;
 
 /// <summary>
 /// Extensions for <see cref="Timer"/>.

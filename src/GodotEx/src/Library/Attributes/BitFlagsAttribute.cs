@@ -1,4 +1,4 @@
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Attribute that is recognized by <see cref="NodeExtensions.ResolveBitFlags(Godot.Node)"/> to set

@@ -1,10 +1,10 @@
-using Qkabi.DotnetEx.Maths;
+using DotnetEx;
 using Godot;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Qkabi.GodotEx.Tests;
+namespace GodotEx.Tests;
 
 public partial class Node3DExtensionsTest : Node {
     [NodePath] private MeshInstance3D _mesh;

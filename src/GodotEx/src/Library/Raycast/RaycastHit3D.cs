@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// A struct that encapsulates raycast result.

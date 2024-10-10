@@ -1,8 +1,8 @@
-using Qkabi.DotnetEx.Reflections;
+using DotnetEx;
 using Godot;
 using Microsoft.Extensions.Hosting;
 
-namespace Qkabi.GodotEx.Hosting;
+namespace GodotEx.Hosting;
 
 internal class SingletonManager : IHostedService, IDisposable {
     private readonly SceneTree _tree;

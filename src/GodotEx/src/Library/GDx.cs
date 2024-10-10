@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using FileAccess = Godot.FileAccess;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// GodotEx's global functions.

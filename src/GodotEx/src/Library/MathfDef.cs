@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Additional <see cref="Mathf"/> related definitions.

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx.Tests;
+namespace GodotEx.Tests;
 
 public partial class InputManagerTest : Control {
     private InputManager _inputManager;

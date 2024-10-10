@@ -1,7 +1,7 @@
-using Qkabi.DotnetEx.Maths;
+using DotnetEx;
 using Godot;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Extensions for <see cref="Vector2"/>.

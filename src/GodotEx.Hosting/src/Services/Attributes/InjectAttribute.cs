@@ -1,4 +1,4 @@
-namespace Qkabi.GodotEx.Hosting;
+namespace GodotEx.Hosting;
 
 /// <summary>
 /// Attribute that is recognized by <see cref="DependencyInjector"/> to inject field or 

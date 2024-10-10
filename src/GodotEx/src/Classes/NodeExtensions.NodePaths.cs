@@ -1,8 +1,8 @@
-using Qkabi.DotnetEx.Reflections;
+using DotnetEx;
 using Godot;
 using System.Reflection;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 public static partial class NodeExtensions {
     private static readonly Dictionary<Type, IEnumerable<NodePathInfo>> NODE_PATH_INFOS = new();

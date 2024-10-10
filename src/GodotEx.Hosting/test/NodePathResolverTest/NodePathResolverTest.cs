@@ -1,9 +1,9 @@
-using Qkabi.DotnetEx.Reflections;
+using DotnetEx;
 using Godot;
 using System.Reflection;
 using Xunit;
 
-namespace Qkabi.GodotEx.Hosting.Tests;
+namespace GodotEx.Hosting.Tests;
 
 public partial class NodePathResolverTest : Node {
     [NodePath] 

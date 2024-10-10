@@ -1,4 +1,4 @@
-namespace Qkabi.GodotEx.Tests;
+namespace GodotEx.Tests;
 
 public enum RenderLayers3D : uint {
     Player = 1 << 0,

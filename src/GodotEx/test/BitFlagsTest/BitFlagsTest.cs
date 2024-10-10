@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx.Tests;
+namespace GodotEx.Tests;
 
 [BitFlags("collision_layer", PhysicsLayers3D.Player)]
 [BitFlags("collision_mask", PhysicsLayers3D.NonPlayer)]

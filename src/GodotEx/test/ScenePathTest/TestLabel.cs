@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx.Tests;
+namespace GodotEx.Tests;
 
 [PackedScene]
 public partial class TestLabel : Label { }

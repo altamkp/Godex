@@ -1,8 +1,8 @@
 using Godot;
-using Qkabi.DotnetEx.Reflections;
+using DotnetEx;
 using System.Reflection;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 public partial class NodeExtensions {
     private static readonly Dictionary<Type, IEnumerable<FlagInfo>?> LAYER_INFOS = new();

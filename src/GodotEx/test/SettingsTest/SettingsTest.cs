@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Qkabi.GodotEx.Tests;
+namespace GodotEx.Tests;
 
 public partial class SettingsTest : Node {
     private const string AUDIO = "audio";

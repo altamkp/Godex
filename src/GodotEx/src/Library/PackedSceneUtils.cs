@@ -1,7 +1,7 @@
 using System.Reflection;
 using Godot;
 
-namespace Qkabi.GodotEx;
+namespace GodotEx;
 
 /// <summary>
 /// Utilities for <see cref="PackedScene"/>.

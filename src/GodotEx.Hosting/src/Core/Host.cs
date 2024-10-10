@@ -1,8 +1,9 @@
+using DotnetEx.Hosting;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Qkabi.GodotEx.Hosting;
+namespace GodotEx.Hosting;
 
 /// <summary>
 /// A node that provides hosting service. Override <see cref="ConfigureServices(IServiceCollection)"/>
@@ -62,6 +63,17 @@ public abstract partial class Host : Node {
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Called when the node exits the Godot.SceneTree.
+    /// </summary>
+    public override void _ExitTree() {
+        foreach (IHostedService hostedService in ServiceProvider.GetServices<IHostedService>()) {
+            hostedService.StopAsync(CancellationToken.None).GetAwaiter().GetResult();
+        }
+        ServiceProvider.Dispose();
+        ServiceProvider = null!;
     }
 
     /// <summary>
