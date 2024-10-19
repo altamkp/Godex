@@ -28,9 +28,7 @@ internal class DependencyInjector : IHostedService, IDisposable {
         var type = node.GetType();
 
         if (!_members.TryGetValue(type, out var members)) {
-            var properties = type.GetPropertiesWithAttribute(InjectAttribute.TYPE, BINDING_FLAGS);
-            var fields = type.GetFieldsWithAttribute(InjectAttribute.TYPE, BINDING_FLAGS);
-            members = properties.Cast<MemberInfo>().Concat(fields).ToArray();
+            members = GetMembersRecursive(type, Enumerable.Empty<MemberInfo>()).ToArray();
             _members[type] = members;
         }
 
@@ -39,6 +37,19 @@ internal class DependencyInjector : IHostedService, IDisposable {
             var service = Host.ServiceProvider.GetService(memberType)
                 ?? throw new InvalidOperationException($"Service of type {memberType} not found.");
             member.SetValue(node, service);
+        }
+        return;
+
+        static IEnumerable<MemberInfo> GetMembersRecursive(Type type, IEnumerable<MemberInfo> previous) {
+            var members = type
+                .GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(mi => mi.IsDefined<InjectAttribute>());
+            
+            var results = previous.Union(members);
+            if (!type.BaseType?.Namespace?.Contains(nameof(Godot)) ?? false) {
+                results = GetMembersRecursive(type.BaseType!, results);
+            }
+            return results;
         }
     }
 }
