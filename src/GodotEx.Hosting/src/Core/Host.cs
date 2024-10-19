@@ -45,23 +45,10 @@ public abstract partial class Host : Node {
         services.AddSingletonHostedService<SingletonManager>();
         ConfigureServices(services);
 
-        AssertServiceTypes(services);
         ServiceProvider = services.BuildServiceProvider();
 
         foreach (IHostedService hostedService in ServiceProvider.GetServices<IHostedService>()) {
             hostedService.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
-        }
-
-        static void AssertServiceTypes(IServiceCollection services) {
-            var hostType = typeof(Host);
-            var nodeType = typeof(Node);
-
-            foreach (ServiceDescriptor desc in services) {
-                var serviceType = desc.ServiceType;
-                if (!serviceType.IsSubclassOf(hostType) && serviceType.IsSubclassOf(nodeType)) {
-                    throw new InvalidOperationException("Godot nodes cannot be added to hosts, use SceneTree.AddSingleton() or [Singleton] instead.");
-                }
-            }
         }
     }
 
