@@ -16,11 +16,12 @@ public class Setting<[MustBeVariant] T> where T : notnull {
     private readonly Func<T, bool> _predicate;
 
     private T _value;
-    
-    internal Setting(string section, string key, T @default, Action<T> setter, Func<T, bool>? predicate = null) {
+
+    internal Setting(string section, string key, T value, T @default, Action<T> setter, Func<T, bool>? predicate = null) {
         Section = section;
         Key = key;
-        _value = @default;
+        _value = value;
+        Callable.From(() => SetValue(value)).CallDeferred();
         Default = @default;
 
         _setter = setter;
@@ -48,12 +49,9 @@ public class Setting<[MustBeVariant] T> where T : notnull {
     public T Value {
         get => _value;
         set {
-            if (!_predicate(value)) {
-                throw new ArgumentException($"Argument {value} does not satisfy predicate.");
+            if (_predicate(value) && !value.Equals(_value)) {
+                SetValue(value);
             }
-            _value = value;
-            _setter(_value);
-            Updated(_value);
         }
     }
 
@@ -61,4 +59,10 @@ public class Setting<[MustBeVariant] T> where T : notnull {
     /// Default value of the setting.
     /// </summary>
     public T Default { get; }
+
+    private void SetValue(T value) {
+        _value = value;
+        _setter(_value);
+        Updated(_value);
+    }
 }

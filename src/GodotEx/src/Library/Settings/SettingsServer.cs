@@ -19,9 +19,9 @@ namespace GodotEx;
 public class SettingsServer {
     private const BindingFlags FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-    private static readonly Dictionary<Type, SettingInfo[]> INFOS = new();
+    private static readonly Dictionary<Type, SettingInfo[]> INFOS = [];
 
-    private readonly Dictionary<string, Dictionary<string, object>> _settings = new();
+    private readonly Dictionary<string, Dictionary<string, object>> _settings = [];
 
     internal SettingsServer(Dictionary<string, Dictionary<string, object>> settings) {
         _settings = settings;

@@ -27,15 +27,18 @@ public partial class SettingsTest : Node {
 
     public override void _Ready() {
         var server = new SettingsServerBuilder()
-            .With(AUDIO, MUSIC, 100,
-                vol => AudioServer.SetBusVolumeDb(1, vol),
-                vol => vol >= 0 && vol <= 100)
-            .With(AUDIO, SFX, 100,
-                vol => AudioServer.SetBusVolumeDb(2, vol),
-                vol => vol >= 0 && vol <= 100)
-            .With(GRAPHICS, SSRL, false,
-                value => ProjectSettings.SetSetting("rendering/anti_aliasing/screen_space_roughness_limiter/enabled", value))
-            .With(GENERAL, LOCALE, "en", TranslationServer.SetLocale)
+            .WithSection(AUDIO)
+                .WithSetting(MUSIC, 100,
+                    vol => AudioServer.SetBusVolumeDb(1, vol),
+                    vol => vol >= 0 && vol <= 100)
+                .WithSetting(SFX, 100,
+                    vol => AudioServer.SetBusVolumeDb(2, vol),
+                    vol => vol >= 0 && vol <= 100)
+            .WithSection(GRAPHICS)
+                .WithSetting(SSRL, false,
+                    value => ProjectSettings.SetSetting("rendering/anti_aliasing/screen_space_roughness_limiter/enabled", value))
+            .WithSection(GENERAL)
+                .WithSetting(LOCALE, "en", TranslationServer.SetLocale)
             .Build();
 
         server.Inject(this);
