@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Godex.Hosting</PackageId>
+    <Authors>altamkp</Authors>
+    <Company>Qkabi Games</Company>
+    <PackageDescription>Hosting extension library for Godot in C#.</PackageDescription>
+
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <OutputType>Library</OutputType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>8618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../Godex/src/Godex.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

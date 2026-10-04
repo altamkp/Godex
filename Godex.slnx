@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Godex.Async/">
+    <Project Path="src/Godex.Async/src/Godex.Async.csproj" />
+    <Project Path="src/Godex.Async/test/Godex.Async.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/Godex.Hosting/">
+    <Project Path="src/Godex.Hosting/src/Godex.Hosting.csproj" />
+    <Project Path="src/Godex.Hosting/test/Godex.Hosting.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/Godex/">
+    <Project Path="src/Godex/src/Godex.csproj" />
+    <Project Path="src/Godex/test/Godex.Tests.csproj" />
+  </Folder>
+</Solution>
