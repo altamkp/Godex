@@ -109,6 +109,8 @@ public partial class Character : CharacterBody3D {
 
 From now on, when you need to modify your list of layer names, simply modify you enums and the changes will be reflected.
 
+`this.Resolve()` resolves node paths and groups as well, use `this.ResolveBitFlags()` if a node only has bit flags to resolve.
+
 ## Usage with `[NodePath]`
 
 You can use the `[NodePath]` attribute to [resolve node dependencies](ResolvingNodeDependencies.md) to simplify your code to the following:

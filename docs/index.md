@@ -7,7 +7,7 @@
 Basic extension library for Godot:
 
 - Extension methods for Godot classes such as [InputEvent](https://docs.godotengine.org/en/stable/classes/class_inputevent.html), [Node](https://docs.godotengine.org/en/stable/classes/class_node.html), [Transform3D](https://docs.godotengine.org/en/stable/classes/class_transform3d.html), etc.
-- Utilities for [node path resolving](Godex/ResolvingNodeDependencies.md), [packed scene instantiation](Godex/InstantiatingPackedScenes.md), [raycast](Godex/Raycast.md), [input handling](Godex/InputHandling.md), etc.
+- Utilities for [node path resolving](Godex/ResolvingNodeDependencies.md), [packed scene instantiation](Godex/InstantiatingPackedScenes.md), [raycast](Godex/Raycast.md), [input handling](Godex/InputHandling.md), [object pooling](Godex/ObjectPooling.md), etc.
 
 ## [Godex.Async](Godex.Async/index.md)
 
@@ -25,8 +25,8 @@ Hosting extension library for Godot:
 
 ## Prerequisites
 
-- [.NET 6.0](https://dotnet.microsoft.com/en-us/download)+
-- [Godot Engine - .NET 4.0](https://godotengine.org/)+
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download)+
+- [Godot Engine - .NET 4.7.2](https://godotengine.org/)+
 
 ## License
 

@@ -1,0 +1,348 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [ opened, edited, synchronize, reopened, ready_for_review ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  VERSION_FILE: Directory.Build.props
+  RUNSETTINGS: .runsettings-gdunit-ci
+  # Keep in sync with GodotSharp / Godot.NET.Sdk in the csproj files.
+  GODOT_URL: https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip
+  PROJECTS: >-
+    src/Godex/test/Godex.Tests.csproj
+    src/Godex.Async/test/Godex.Async.Tests.csproj
+    src/Godex.Hosting/test/Godex.Hosting.Tests.csproj
+
+jobs:
+  version:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    permissions:
+      # Needed to push the bump commit back to master.
+      contents: write
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      sha: ${{ steps.resolve.outputs.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # History is needed to see whether the pushed commit edited the version.
+          fetch-depth: 0
+
+      # On a push to master: bump the patch component (0.1.0 -> 0.1.1) unless the
+      # commit set the version by hand. The bump commit is tagged [skip ci] so it
+      # starts no new run - its content was already built and published below.
+      - name: Resolve and bump version
+        id: resolve
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          version="$(sed -n 's:.*<Version>[[:space:]]*\([^<]*\)[[:space:]]*</Version>.*:\1:p' "$VERSION_FILE" | head -n 1 | tr -d '\r')"
+          bumped=false
+
+          if [ "$EVENT_NAME" = push ]; then
+            parent="$(git rev-parse --verify --quiet HEAD~1 || true)"
+            if [ -n "$parent" ] && git diff --name-only "$parent" HEAD -- "$VERSION_FILE" | grep -q .; then
+              echo "::notice::$VERSION_FILE was changed by this commit, keeping version $version."
+            else
+              core="${version%%[-+]*}"
+              suffix="${version#"$core"}"
+              IFS=. read -r major minor patch <<< "$core"
+              if ! [[ "$major" =~ ^[0-9]+$ && "$minor" =~ ^[0-9]+$ && "$patch" =~ ^[0-9]+$ ]]; then
+                echo "::error::$VERSION_FILE holds '$version', which CI cannot bump."
+                exit 1
+              fi
+              version="$major.$minor.$((patch + 1))$suffix"
+              bumped=true
+            fi
+          fi
+
+          if [ "$bumped" = true ]; then
+            sed -i "s|<Version>.*</Version>|<Version>$version</Version>|" "$VERSION_FILE"
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -qam "chore: bump version to $version [skip ci]"
+            if ! git push origin HEAD:master; then
+              echo "::error::could not push the version bump - master moved, re-run this job."
+              exit 1
+            fi
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "| Version | Bumped by CI |"
+            echo "| --- | --- |"
+            echo "| \`$version\` | $bumped |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  setup:
+    name: Setup
+    needs: version
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ needs.version.outputs.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # The bump commit when CI made one, otherwise the pushed commit itself.
+          ref: ${{ needs.version.outputs.sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build Godex.slnx --configuration Release
+
+      - name: Install Godot
+        run: |
+          set -euo pipefail
+
+          curl -fsSL --retry 3 "$GODOT_URL" -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+
+          binary="$(find "$RUNNER_TEMP/godot" -type f -name 'Godot_v*' | head -n 1)"
+          if [ -z "$binary" ]; then
+            echo "::error::$GODOT_URL did not contain a Godot binary."
+            exit 1
+          fi
+          chmod +x "$binary"
+          echo "GODOT_BIN=$binary" >> "$GITHUB_ENV"
+
+      # Each package is its own Godot project, so a fresh checkout has to be
+      # imported before anything loads a scene or an imported resource.
+      - name: Import Godot projects
+        run: |
+          set -euo pipefail
+
+          for project in src/Godex/test src/Godex.Async/test src/Godex.Hosting/test; do
+            echo "Importing $project"
+            "$GODOT_BIN" --headless --path "$project" --import
+          done
+
+  # Every suite runs in its own `dotnet test` invocation on purpose. gdUnit4's
+  # VSTest adapter 3.1.1 silently drops results when a whole assembly is run at
+  # once, and a dropped result swallows the failure with it: a broken test still
+  # reports "Passed!". Running one suite at a time avoids that, and each job then
+  # checks it reported as many tests as were discovered.
+  discover:
+    name: Discover suites
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Discover
+        env:
+          PROJECTS: ${{ env.PROJECTS }}
+        run: |
+          set -euo pipefail
+
+          matrix='['
+          summary=''
+          first=1
+          for project in $PROJECTS; do
+            log="$(mktemp)"
+            dotnet test "$project" --settings "$RUNSETTINGS" --list-tests \
+              --logger 'console;verbosity=detailed' > "$log" 2>&1 || true
+
+            name="$(basename "$project" .csproj)"
+            count="$(grep -cE '^\[GdUnit4\] Discover:  TestSuite ' "$log" || true)"
+            if [ "$count" -eq 0 ]; then
+              echo "::error::No gdUnit4 suites discovered in $project."
+              cat "$log"
+              exit 1
+            fi
+
+            while read -r suite; do
+              [ -z "$suite" ] && continue
+              if [ "$first" -eq 0 ]; then
+                matrix="$matrix,"
+              fi
+              first=0
+              matrix="$matrix{\"project\":\"$project\",\"projectName\":\"$name\",\"suite\":\"$suite\"}"
+              cases="$(sed -n "s/^.\{0,40\}TestSuite $suite with \([0-9]*\) TestCases found.*/\1/p" "$log" | head -n 1)"
+              summary="$summary- $suite ($name, $cases tests)\n"
+            done < <(sed -n 's/^.\{0,40\}TestSuite \([^ ]*\) with .*/\1/p' "$log")
+
+            echo "$name: $count suites discovered"
+            rm -f "$log"
+          done
+          matrix="$matrix]"
+
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Discovered gdUnit4 suites"
+            echo ""
+            printf '%b' "$summary"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  test:
+    name: ${{ matrix.projectName }} · ${{ matrix.suite }}
+    needs: [ setup, discover ]
+    runs-on: ubuntu-latest
+
+    strategy:
+      # One broken suite must not hide the state of the others.
+      fail-fast: false
+      matrix:
+        entry: ${{ fromJSON(needs.discover.outputs.matrix) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.setup.outputs.sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build "${{ matrix.entry.project }}" --configuration Release
+
+      - name: Install Godot
+        run: |
+          set -euo pipefail
+
+          curl -fsSL --retry 3 "$GODOT_URL" -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+
+          binary="$(find "$RUNNER_TEMP/godot" -type f -name 'Godot_v*' | head -n 1)"
+          if [ -z "$binary" ]; then
+            echo "::error::$GODOT_URL did not contain a Godot binary."
+            exit 1
+          fi
+          chmod +x "$binary"
+          echo "GODOT_BIN=$binary" >> "$GITHUB_ENV"
+
+      - name: Import Godot project
+        run: |
+          set -euo pipefail
+
+          "$GODOT_BIN" --headless --path "$(dirname "${{ matrix.entry.project }}")" --import
+
+      # GODOT_BIN is mandatory: without it the adapter reports "No test is
+      # available in <dll>". xvfb-run is insurance in case a child Godot process
+      # reaches for a display.
+      - name: Run suite
+        env:
+          SUITE: ${{ matrix.entry.suite }}
+        run: |
+          set -euo pipefail
+
+          log="$(mktemp)"
+          xvfb-run --auto-servernum dotnet test "${{ matrix.entry.project }}" \
+            --settings "$RUNSETTINGS" \
+            --filter "FullyQualifiedName~$SUITE" \
+            --logger 'console;verbosity=detailed' > "$log" 2>&1 || true
+          cat "$log"
+
+          # The detailed console logger reports "Total tests:" plus one line each
+          # for Passed/Failed, rather than the single summary line of the normal one.
+          expected="$(sed -n "s/^.\{0,40\}TestSuite $SUITE with \([0-9]*\) TestCases found.*/\1/p" "$log" | head -n 1)"
+          reported="$(sed -n 's/^Total tests: *\([0-9]*\)/\1/p' "$log" | tail -n 1)"
+          # vstest omits the Failed line entirely when nothing failed.
+          passed="$(sed -n 's/^ *Passed: *\([0-9]*\)/\1/p' "$log" | tail -n 1)"
+          failed="$(sed -n 's/^ *Failed: *\([0-9]*\)/\1/p' "$log" | tail -n 1)"
+          failed="${failed:-0}"
+
+          echo "expected=$expected reported=${reported:-none} passed=${passed:-none} failed=${failed:-none}"
+          {
+            echo "| Suite | Tests | Passed | Failed |"
+            echo "| --- | --- | --- | --- |"
+            echo "| \`$SUITE\` | ${reported:-0} | ${passed:-?} | ${failed:-?} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "$expected" ] || [ -z "$reported" ]; then
+            echo "::error::$SUITE produced no test results."
+            exit 1
+          fi
+          if grep -qE 'Test host process crashed|Aborting test run' "$log"; then
+            echo "::error::$SUITE crashed or aborted the test host."
+            exit 1
+          fi
+          if [ "$reported" -lt "$expected" ]; then
+            echo "::error::$SUITE reported $reported of $expected tests, results were dropped."
+            exit 1
+          fi
+          if ! grep -qE '^Test Run Successful\.' "$log"; then
+            echo "::error::$SUITE did not pass (failed=${failed:-?})."
+            exit 1
+          fi
+
+  pack:
+    name: Pack and publish
+    needs: [ setup, test ]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.setup.outputs.sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build Godex.slnx --configuration Release
+
+      - name: Pack
+        run: |
+          set -euo pipefail
+
+          for project in src/Godex/src src/Godex.Async/src src/Godex.Hosting/src; do
+            dotnet pack "$project" --configuration Release --no-build --output packages
+          done
+          ls -l packages
+
+      - name: Publish to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::error::secrets.NUGET_API_KEY is not set."
+            exit 1
+          fi
+
+          for package in packages/*.nupkg; do
+            dotnet nuget push "$package" \
+              --api-key "$NUGET_API_KEY" \
+              --source https://api.nuget.org/v3/index.json \
+              --skip-duplicate
+          done
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gdunit4-test-results
+          path: |
+            TestResults/
+            reports/

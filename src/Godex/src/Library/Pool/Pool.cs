@@ -22,6 +22,7 @@ public class Pool<T> where T : Node {
     public Pool(Node node, int capacity, Action<T>? setup = null) {
         _node = node;
         _capacity = capacity;
+        _setup = setup;
 
         for (int i = 0; i < _capacity; i++) {
             var instance = CreateInstance();

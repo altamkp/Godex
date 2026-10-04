@@ -25,9 +25,12 @@ GD.Print($"Raycast hit surface at {position} with normal {normal}.");
 With `RaycastHit2D` you can write:
 
 ```csharp
-var hit = result.ToRaycastHit2D();
-GD.Print($"Raycast hit surface at {hit.Position} with normal {hit.Normal}.");
+if (result.ToRaycastHit2D() is RaycastHit2D hit) {
+    GD.Print($"Raycast hit surface at {hit.Position} with normal {hit.Normal}.");
+}
 ```
+
+`ToRaycastHit2D()` and `ToRaycastHit3D()` return `null` when the dictionary holds no hit.
 
 ## Viewport Extensions
 
@@ -58,5 +61,11 @@ After setting up the physics layers, the following extensions can be used:
 2. Center raycast - getting raycast result from the center of the viewport to specified physics layers
 
    ```csharp
-   var hit = GetViewport().GetMouseRaycast(PhysicsLayers3D.Player | PhysicsLayers3D.Enemy);
+   var hit = GetViewport().GetCenterRaycast(PhysicsLayers3D.Player | PhysicsLayers3D.Enemy);
    ```
+
+Both extensions require a [Camera3D](https://docs.godotengine.org/en/stable/classes/class_camera3d.html) in the viewport and return a `RaycastHit3D?`, which is null when the ray does not hit anything. The ray length defaults to `RaycastDef.DEFAULT_RAY_LENGTH` and can be passed as the last argument:
+
+```csharp
+var hit = GetViewport().GetCenterRaycast(PhysicsLayers3D.Player | PhysicsLayers3D.Enemy, 500);
+```

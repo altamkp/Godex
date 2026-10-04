@@ -12,7 +12,7 @@ public partial class RailGun : Node3D {
 
     public override void _ShortcutInput(InputEvent @event) {
         if (@event is InputEventKey keyEvent) {
-            if (keyEvent.KeyCode == Key.Space && keyEvent.IsPressed()) {
+            if (keyEvent.Keycode == Key.Space && keyEvent.IsPressed()) {
                 _ = CountdownAsync(ChargeTime);
             }
         }
@@ -53,7 +53,7 @@ public partial class PowerUp : Area3D {
 
     public override void _ShortcutInput(InputEvent @event) {
         if (@event is InputEventKey keyEvent) {
-            if (keyEvent.KeyCode == Key.Space) {
+            if (keyEvent.Keycode == Key.Space) {
                 if (keyEvent.IsPressed()) {
                     _ = CountdownAsync(ChargeTime);
                 } else {

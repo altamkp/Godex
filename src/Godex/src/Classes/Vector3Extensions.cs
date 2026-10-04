@@ -120,14 +120,14 @@ public static class Vector3Extensions {
     /// </summary>
     /// <param name="vector">Vector to convert.</param>
     /// <returns>The same angles expressed in radians.</returns>
-    public static Vector3 RadToDeg(this Vector3 vector) => vector * Mathf.Pi / 180f;
+    public static Vector3 DegToRad(this Vector3 vector) => vector * Mathf.Pi / 180f;
 
     /// <summary>
     /// Converts angles expressed in radians to degrees.
     /// </summary>
     /// <param name="vector">Vector to convert.</param>
     /// <returns>The same angles expressed in degrees.</returns>
-    public static Vector3 DegToRad(this Vector3 vector) => vector * 180f / Mathf.Pi;
+    public static Vector3 RadToDeg(this Vector3 vector) => vector * 180f / Mathf.Pi;
 
     /// <summary>
     /// Checks if the two vectors are approximately equal.

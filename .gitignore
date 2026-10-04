@@ -435,3 +435,8 @@ $RECYCLE.BIN/
 ## Docfx
 docs/_site/
 docs/api/
+
+# gdUnit4
+gdunit4_testadapter_v5/
+reports/
+TestResults/

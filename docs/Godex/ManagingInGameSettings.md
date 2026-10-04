@@ -12,28 +12,31 @@ The values of specific settings may need to be read from or written to all over 
 
 ### Configuration
 
-To start with, use a `SettingsServerBuilder` to configure your settings:
+To start with, use a `SettingsServerBuilder` to configure your settings. The builder takes the path of the config file to read from and write to, defaulting to `user://settings.cfg`:
 
 ```csharp
-SettingServer server = new SettingsServerBuilder()
-    .With("audio", "music", 100,
-        vol => AudioServer.SetBusVolumeDb(1, vol),
-        vol => vol >= 0 && vol <= 100)
-    .With("audio", "sfx", 100,
-        vol => AudioServer.SetBusVolumeDb(2, vol),
-        vol => vol >= 0 && vol <= 100)
-    .With("graphics", "ssrl", false,
-        value => ProjectSettings.SetSetting("rendering/anti_aliasing/screen_space_roughness_limiter/enabled", value))
-    .With("general", "locale", "en", TranslationServer.SetLocale)
+SettingsServer server = new SettingsServerBuilder()
+    .WithSection("audio")
+        .WithSetting("music", 100,
+            vol => AudioServer.SetBusVolumeDb(1, vol),
+            vol => vol >= 0 && vol <= 100)
+        .WithSetting("sfx", 100,
+            vol => AudioServer.SetBusVolumeDb(2, vol),
+            vol => vol >= 0 && vol <= 100)
+    .WithSection("graphics")
+        .WithSetting("ssrl", false,
+            value => ProjectSettings.SetSetting("rendering/anti_aliasing/screen_space_roughness_limiter/enabled", value))
+    .WithSection("general")
+        .WithSetting("locale", "en", TranslationServer.SetLocale)
     .Build();
 ```
 
-Each `.With()` chain configures a setting by using 4 parameters:
+Sections are set with `.WithSection(section)` and every `.WithSetting()` that follows is added to that section until another `.WithSection()` is called. Each `.WithSetting()` call configures a setting by using 4 parameters:
 
-1. `section` - section where the setting is stored
-2. `key` - key where the setting is mapped from
+1. `key` - key where the setting is mapped from
+2. `default` - value used when the config file has no value stored for this setting
 3. `setter` - action to perform when the setting is updated, given that the predicate is satisfied
-4. `predicate` - conditions to check before updating the setting
+4. `predicate` - optional conditions to check before updating the setting
 
 > [!Note]
 > The following shows the cfg file created by this builder:
@@ -56,7 +59,7 @@ Each `.With()` chain configures a setting by using 4 parameters:
 
 There are 2 APIs in `SettingsServer` for obtaining settings:
 
-1. `GetSetting(string section, string key)`
+1. `GetSetting<T>(string section, string key)`
 
     Used for obtaining a single setting by specifying its section and key.
 
@@ -82,9 +85,10 @@ There are 2 APIs in `SettingsServer` for obtaining settings:
     [Setting("general", "locale")]
     private Setting<string> _locale;
 
-    private override void _Ready() {
+    public override void _Ready() {
         var server = new SettingsServerBuilder()
-            .With(...)
+            .WithSection("audio")
+                .WithSetting(...)
             .Build();
         server.Inject(this);
 
@@ -107,12 +111,12 @@ music.Value = 88;
 
 The update executes in the following steps:
 
-1. Checks if the value to assign satisfies the predicate
-2. If the predicate is satisfied, the value is updated
-3. Performs `setter` action
-4. Fires the `Updated` event is fired, notifying any subscribers
+1. Checks that the value to assign satisfies the predicate and differs from the current value
+2. If satisfied, the value is updated
+3. Performs the `setter` action
+4. Fires the `Updated` event, notifying any subscribers
 5. Updates the config file
-   
+
 ## Usage with `Godex.Hosting.Host`
 
 It is **highly recommended** to use the `SettingsServer` with `Godex.Hosting.Host` which makes use of dependency injection for acquire the `SettingsServer` instance. Read more about hosting in [Godex.Hosting](~/Godex.Hosting/Hosting.md).
@@ -123,9 +127,17 @@ public partial class AppHost : Host {
         base.ConfigureServices(services);
 
         var settingsServer = new SettingsServerBuilder()
-            // .With()
+            .WithSection("audio")
+                // .WithSetting()
             .Build();
         services.AddSingleton(settingsServer);
     }
 }
+```
+
+The hosted `SettingsServer` is resolved from anywhere through the host's service provider:
+
+```csharp
+var server = Host.ServiceProvider.GetRequiredService<SettingsServer>();
+server.Inject(this);
 ```

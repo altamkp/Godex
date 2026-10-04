@@ -7,12 +7,20 @@ Hosting extension library for Godot:
 
 ## Prerequisites
 
-- [.NET 6.0](https://dotnet.microsoft.com/en-us/download)+
-- [Godot Engine - .NET 4.0](https://godotengine.org/)+
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download)+
+- [Godot Engine - .NET 4.7.2](https://godotengine.org/)+
+
+## Installation
+
+Install the `Godex.Hosting` nuget package with the following command:
+
+```
+dotnet add package Godex.Hosting
+```
 
 ## Documentation
 
-Please refer to [this page](https://altamkp.github.io/Godex/docs/Godex.Hosting/index.html) for a detailed documentation.
+Please refer to [this page](https://altamkp.github.io/Godex/Godex.Hosting/index.html) for a detailed documentation.
 
 ## License
 

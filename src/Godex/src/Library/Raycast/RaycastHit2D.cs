@@ -22,8 +22,8 @@ public readonly struct RaycastHit2D {
 
     /// <summary>
     /// The object's surface normal at the intersection point, or
-    /// <see cref="Vector3.Zero"/> if the  ray starts inside the shape and 
-    /// <see cref="PhysicsRayQueryParameters3D.HitFromInside"/> is true.
+    /// <see cref="Vector2.Zero"/> if the  ray starts inside the shape and 
+    /// <see cref="PhysicsRayQueryParameters2D.HitFromInside"/> is true.
     /// </summary>
     public Vector2 Normal { get; }
 

@@ -7,8 +7,8 @@ Hosting extension library for Godot:
 
 ## Prerequisites
 
-- [.NET 6.0](https://dotnet.microsoft.com/en-us/download)+
-- [Godot Engine - .NET 4.0](https://godotengine.org/)+
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download)+
+- [Godot Engine - .NET 4.7.2](https://godotengine.org/)+
 
 ## Installation
 

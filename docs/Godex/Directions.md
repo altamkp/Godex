@@ -10,7 +10,7 @@ public enum Direction2D {
 
 ```csharp
 public enum Direction3D {
-    Right, Left, Up, Down, Forward, Backward
+    Right, Left, Up, Down, Forward, Back
 }
 ```
 
@@ -26,7 +26,27 @@ public void LookAt(Direction3D direction) {
         Direction3D.Up => new Vector3(-Mathf.Pi / 2, 0, 0);
         Direction3D.Down => new Vector3(Mathf.Pi / 2, 0, 0);
         Direction3D.Forward => Vector3.Zero;
-        Direction3D.Backward => new Vector3(0, Mathf.Pi, 0);
+        Direction3D.Back => new Vector3(0, Mathf.Pi, 0);
     }
 }
+```
+
+## Extensions
+
+Directions can be converted to and from their orthogonal vectors:
+
+```csharp
+Direction3D direction = Direction3D.Up;
+Vector3 vector = direction.ToVector3();  // Vector3.Up
+Direction3D same = vector.ToDirection();  // Direction3D.Up
+
+Vector2 vector2 = Direction2D.Down.ToVector2();  // Vector2.Down
+```
+
+`ToDirection()` throws an `ArgumentException` when the vector is not orthogonal to any of the directions, and compares with the tolerance defined by `MathfDef.DEFAULT_PRECISION`.
+
+Opposite directions are one call away with `Flip()`:
+
+```csharp
+Direction3D direction = Direction3D.Forward.Flip(); // Direction3D.Back
 ```

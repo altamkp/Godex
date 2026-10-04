@@ -15,14 +15,18 @@
           href: Godex/InstantiatingPackedScenes.md
         - name: Managing In-Game Settings
           href: Godex/ManagingInGameSettings.md
+        - name: Object Pooling
+          href: Godex/ObjectPooling.md
         - name: Raycast
           href: Godex/Raycast.md
         - name: Resolving Bit Flags
           href: Godex/ResolvingBitFlags.md
+        - name: Resolving Groups
+          href: Godex/ResolvingGroups.md
         - name: Resolving Node Dependencies
           href: Godex/ResolvingNodeDependencies.md
-        - name: Single Nodes
-          href: Godex/SingleNodes.md
+        - name: Singleton Nodes
+          href: Godex/SingletonNodes.md
     - name: Godex.Async
       href: Godex.Async/index.md
       items:
