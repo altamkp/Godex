@@ -134,4 +134,4 @@ public partial class Character : CharacterBody3D {
 
 ## Usage with `Godex.Hosting.Host`
 
-It is **highly recommended** to use the `[BitFlags]` resolving functionality together with `Godex.Hosting.Host` since it provides a hosted service for resolving nodes as they enter the scene tree, hence you don't need to call `this.Resolve()` on all nodes that require resolving. Learn how to set up an application scoped [autoload host](~/docs/Godex.Hosting/Hosting.md#setting-up-an-autoload-host) here.
+It is **highly recommended** to use the `[BitFlags]` resolving functionality together with `Godex.Hosting.Host` since it provides a hosted service for resolving nodes as they enter the scene tree, hence you don't need to call `this.Resolve()` on all nodes that require resolving. Learn how to set up an application scoped [autoload host](~/Godex.Hosting/Hosting.md#setting-up-an-autoload-host) here.

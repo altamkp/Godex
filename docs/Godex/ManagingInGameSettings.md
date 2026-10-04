@@ -94,7 +94,7 @@ There are 2 APIs in `SettingsServer` for obtaining settings:
     ```
 
 > [!Tip]
-> The examples above assume that settings is only needed in one class. In real life, the server should be accessed locally. For this, check out [Godex.Hosting](~/docs/Godex.Hosting/Hosting.md) where you can create an [autoload host](~/docs/Godex.Hosting/Hosting.md#setting-up-an-autoload-host) for hosting the `SettingsServer`.
+> The examples above assume that settings is only needed in one class. In real life, the server should be accessed locally. For this, check out [Godex.Hosting](~/Godex.Hosting/Hosting.md) where you can create an [autoload host](~/Godex.Hosting/Hosting.md#setting-up-an-autoload-host) for hosting the `SettingsServer`.
 
 ### Updating a setting
 
@@ -115,7 +115,7 @@ The update executes in the following steps:
    
 ## Usage with `Godex.Hosting.Host`
 
-It is **highly recommended** to use the `SettingsServer` with `Godex.Hosting.Host` which makes use of dependency injection for acquire the `SettingsServer` instance. Read more about hosting in [Godex.Hosting](~/docs/Godex.Hosting/Hosting.md).
+It is **highly recommended** to use the `SettingsServer` with `Godex.Hosting.Host` which makes use of dependency injection for acquire the `SettingsServer` instance. Read more about hosting in [Godex.Hosting](~/Godex.Hosting/Hosting.md).
 
 ```csharp
 public partial class AppHost : Host {

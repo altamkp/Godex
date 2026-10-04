@@ -1,0 +1,39 @@
+- name: Home
+  href: index.md
+- name: Guides
+  items:
+    - name: Godex
+      href: Godex/index.md
+      items:
+        - name: Basic Extensions
+          href: Godex/BasicExtensions.md
+        - name: Directions
+          href: Godex/Directions.md
+        - name: Input Handling
+          href: Godex/InputHandling.md
+        - name: Instantiating Packed Scenes
+          href: Godex/InstantiatingPackedScenes.md
+        - name: Managing In-Game Settings
+          href: Godex/ManagingInGameSettings.md
+        - name: Raycast
+          href: Godex/Raycast.md
+        - name: Resolving Bit Flags
+          href: Godex/ResolvingBitFlags.md
+        - name: Resolving Node Dependencies
+          href: Godex/ResolvingNodeDependencies.md
+        - name: Single Nodes
+          href: Godex/SingleNodes.md
+    - name: Godex.Async
+      href: Godex.Async/index.md
+      items:
+        - name: Asynchronous Extensions
+          href: Godex.Async/AsynchronousExtensions.md
+        - name: Cancellable Signal Awaiter
+          href: Godex.Async/CancellableSignalAwaiter.md
+    - name: Godex.Hosting
+      href: Godex.Hosting/index.md
+      items:
+        - name: Hosting
+          href: Godex.Hosting/Hosting.md
+- name: API Reference
+  href: api/toc.yml

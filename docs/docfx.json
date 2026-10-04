@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+
+  "metadata": [
+    {
+      "src": [
+        { "src": "..", "files": ["src/Godex/src/Godex.csproj"] },
+        { "src": "..", "files": ["src/Godex.Async/src/Godex.Async.csproj"] },
+        { "src": "..", "files": ["src/Godex.Hosting/src/Godex.Hosting.csproj"] }
+      ],
+      "output": "api",
+      "properties": {
+        "TargetFramework": "net10.0"
+      }
+    }
+  ],
+
+  "build": {
+    "content": [
+      {
+        "files": ["**/*.md", "**/toc.yml", "api/**/*.yml"]
+      }
+    ],
+    "resource": [
+      {
+        "files": ["images/**"]
+      }
+    ],
+    "output": "_site",
+    "globalMetadata": {
+      "_appName": "Godex",
+      "_appTitle": "Godex",
+      "_enableSearch": true
+    },
+    "template": ["default"],
+    "postProcessors": ["ExtractSearchIndex"]
+  }
+}
