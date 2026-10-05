@@ -1,0 +1,21 @@
+/*
+ * DocFX overrides. Loaded after the template stylesheets, see docs/docfx.json.
+ */
+
+/*
+ * docfx.js moves the level-1 list out of #toc and into #navbar to build the top
+ * navigation, so the template rule that collapses nested lists
+ * (.toc .nav > li > ul { display: none }) no longer matches. Every submenu then
+ * renders expanded inside a position: fixed header, which grows to full page
+ * height and covers the article. Collapse by default and open on hover/focus so
+ * the nav stays dismissable.
+ */
+#navbar > ul > li > ul {
+  display: none;
+}
+
+#navbar > ul > li.in > ul,
+#navbar > ul > li:hover > ul,
+#navbar > ul > li:focus-within > ul {
+  display: block;
+}
