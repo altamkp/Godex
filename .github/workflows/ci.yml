@@ -149,6 +149,10 @@ jobs:
     name: Discover suites
     needs: setup
     runs-on: ubuntu-latest
+    # A step writing to GITHUB_OUTPUT does not become a job output on its own;
+    # without this the test job's matrix is empty and no suite ever runs.
+    outputs:
+      matrix: ${{ steps.discover.outputs.matrix }}
 
     steps:
       - name: Checkout
@@ -168,6 +172,7 @@ jobs:
         run: dotnet build Godex.slnx --configuration Release
 
       - name: Discover
+        id: discover
         env:
           PROJECTS: ${{ env.PROJECTS }}
         run: |
