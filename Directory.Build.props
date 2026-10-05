@@ -6,7 +6,7 @@
 
          CI (.github/workflows/ci.yml) bumps the patch component on every push to
          master, unless that commit changed this file by hand. -->
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
   </PropertyGroup>
 
 </Project>
