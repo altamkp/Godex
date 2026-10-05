@@ -151,6 +151,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # The bump commit when CI made one, otherwise the pushed commit itself.
+          ref: ${{ needs.setup.outputs.sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      # Discovery is reflection over the built test assembly, so the test projects
+      # have to exist and be compiled - a bare runner has neither.
+      - name: Build
+        run: dotnet build Godex.slnx --configuration Release
+
       - name: Discover
         env:
           PROJECTS: ${{ env.PROJECTS }}
@@ -162,7 +178,7 @@ jobs:
           first=1
           for project in $PROJECTS; do
             log="$(mktemp)"
-            dotnet test "$project" --settings "$RUNSETTINGS" --list-tests \
+            dotnet test "$project" --configuration Release --settings "$RUNSETTINGS" --list-tests \
               --logger 'console;verbosity=detailed' > "$log" 2>&1 || true
 
             name="$(basename "$project" .csproj)"
@@ -296,6 +312,13 @@ jobs:
     needs: [ setup, test ]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    permissions:
+      # Job-level permissions replace the workflow-level block entirely, so
+      # contents has to be restated or checkout loses its token.
+      contents: read
+      # nuget.org Trusted Publishing: the OIDC token is exchanged for a
+      # short-lived API key, so no long-lived secret is stored.
+      id-token: write
 
     steps:
       - name: Checkout
@@ -320,14 +343,21 @@ jobs:
           done
           ls -l packages
 
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          # nuget.org profile name, not the account email.
+          user: altamkp
+
       - name: Publish to NuGet
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: |
           set -euo pipefail
 
           if [ -z "$NUGET_API_KEY" ]; then
-            echo "::error::secrets.NUGET_API_KEY is not set."
+            echo "::error::NuGet login did not return an API key."
             exit 1
           fi
 
